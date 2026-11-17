@@ -9,6 +9,7 @@
     ['/join', 'join', true],
     ['/dashboard', 'dashboard'],
     ['/labs', 'labs'],
+    ['/practical-classes', 'labs'],
     ['/classroom/:subject', 'classroom'],
     ['/chapter/:subject/:chapter', 'chapter'],
     ['/lab/:subject/:practical', 'lab'],
@@ -20,7 +21,7 @@
   ];
 
   var TITLES = {
-    landing: 'Home', login: 'Sign in', join: 'Join', dashboard: 'Dashboard', labs: 'Practical labs',
+    landing: 'Home', login: 'Sign in', join: 'Join', dashboard: 'Dashboard', labs: 'Practical classes',
     classroom: 'Classroom', chapter: 'Lesson', lab: 'Laboratory', test: 'Chapter test', exam: 'Examination',
     progress: 'My progress', teacher: 'Teacher console', admin: 'Curriculum admin'
   };
@@ -70,7 +71,7 @@
     }
     if (user.role === 'student') {
       return '<a href="#/dashboard" data-nav="dashboard">Dashboard</a>' +
-        '<a href="#/labs" data-nav="labs">Practical labs</a>' +
+        '<a href="#/practical-classes" data-nav="labs">Practical classes</a>' +
         '<a href="#/progress" data-nav="progress">My progress</a>';
     }
     if (user.role === 'teacher') {

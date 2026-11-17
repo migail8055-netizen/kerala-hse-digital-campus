@@ -114,37 +114,138 @@
       '<a class="btn small ghost" style="margin-top:.8rem" href="#/progress">View all results</a></div>' +
       '</div>' +
       '<div class="card flat" style="margin-top:1.2rem"><div class="row-between">' +
-      '<div><b>Practical labs</b><div class="small muted">Experiments and simulations for your subjects, open in the browser.</div></div>' +
-      '<a class="btn primary small" href="#/labs">Open the labs</a></div></div>';
+      '<div><b>Practical classes</b><div class="small muted">Experiments and simulations for your subjects, open in the browser.</div></div>' +
+      '<a class="btn primary small" href="#/practical-classes">Open practical classes</a></div></div>';
 
     return { title: 'Dashboard', html: html };
   };
 
-  HSE.views.labs = function () {
+  function practicalClassUrl(year, subject, status) {
+    return '#/practical-classes?year=' + encodeURIComponent(year) +
+      '&subject=' + encodeURIComponent(subject || 'all') +
+      '&status=' + encodeURIComponent(status || 'all');
+  }
+
+  HSE.views.labs = function (params, query) {
     var user = me();
+    var q = query || {};
+    var year = String(q.year) === '2' ? 2 : 1;
+    var status = ['todo', 'done'].indexOf(q.status) >= 0 ? q.status : 'all';
     var subs = store.subjectsOfStudent(user);
-    var blocks = subs.map(function (s) {
-      var extra = store.practicalActivitiesFor(s.id, user.year);
-      var items = s.practicals.concat(extra.map(function (p) {
-        return { id: p.id, sim: p.sim, title: p.title, brief: p.brief, teacherMade: true };
-      }));
-      if (!items.length) return '';
-      return '<div class="card"><div class="row" style="gap:.6rem"><span class="subject-icon">' + ui.esc(s.icon) + '</span>' +
-        '<div><h3 style="margin:0">' + ui.esc(s.name) + '</h3><div class="small muted">' + items.length + ' activities</div></div></div>' +
-        '<div class="grid" style="margin-top:.8rem;gap:.6rem">' + items.map(function (p) {
-          var done = store.practicalDone(user.id, p.id);
-          return '<a class="lab-tile" href="#/lab/' + ui.attr(s.id) + '/' + ui.attr(p.id) + '">' +
-            '<span class="ico">' + (done ? '✓' : '▷') + '</span>' +
-            '<span style="flex:1"><b>' + ui.esc(p.title) + '</b><span class="meta" style="display:block">' + ui.esc(p.brief) + '</span></span>' +
-            '<span class="pill ' + (done ? '' : 'grey') + '">' + (done ? 'done' : 'open') + '</span></a>';
-        }).join('') + '</div></div>';
+    var subjectIds = subs.map(function (s) { return s.id; });
+    var subjectFilter = subjectIds.indexOf(q.subject) >= 0 ? q.subject : 'all';
+
+    var groups = [];
+    var totals = { total: 0, done: 0 };
+    subs.forEach(function (s) {
+      if (subjectFilter !== 'all' && s.id !== subjectFilter) return;
+      var seen = {};
+      var items = s.practicals.map(function (p) {
+        return { id: p.id, title: p.title, brief: p.brief, source: 'Core practical' };
+      }).concat(store.practicalActivitiesFor(s.id, year).map(function (p) {
+        return { id: p.id, title: p.title, brief: p.brief, source: 'Teacher-set' };
+      })).filter(function (p) {
+        if (seen[p.id]) return false;
+        seen[p.id] = true;
+        return true;
+      });
+      if (!items.length) return;
+
+      items.forEach(function (p) { p.done = store.practicalDone(user.id, p.id); });
+      var done = items.filter(function (p) { return p.done; }).length;
+      totals.total += items.length;
+      totals.done += done;
+      var visible = items.filter(function (p) {
+        if (status === 'done') return p.done;
+        if (status === 'todo') return !p.done;
+        return true;
+      });
+      groups.push({ subject: s, items: visible, done: done, total: items.length, pct: Math.round(done * 100 / items.length) });
+    });
+
+    var subjectOptions = '<option value="all">All my subjects</option>' + subs.map(function (s) {
+      return '<option value="' + ui.attr(s.id) + '"' + (subjectFilter === s.id ? ' selected' : '') + '>' +
+        ui.esc(s.name) + '</option>';
     }).join('');
+
+    var subjectBlocks = groups.filter(function (g) { return g.items.length; }).map(function (g) {
+      var s = g.subject;
+      var accent = ui.streamAccent(s.streams[0]);
+      var tiles = g.items.map(function (p) {
+        return '<a class="lab-tile" href="#/lab/' + ui.attr(s.id) + '/' + ui.attr(p.id) + '">' +
+          '<span class="ico">' + (p.done ? '✓' : '⚗') + '</span>' +
+          '<span style="flex:1"><b>' + ui.esc(p.title) + '</b>' +
+          '<span class="meta" style="display:block">' + ui.esc(p.brief) + '</span>' +
+          '<span class="small muted" style="display:block;margin-top:.25rem">' + ui.esc(p.source) + '</span></span>' +
+          '<span class="pill ' + (p.done ? '' : 'grey') + '">' + (p.done ? 'completed' : 'not started') + '</span></a>';
+      }).join('');
+      return '<section class="card pc-subject">' +
+        '<div class="pc-subject-head">' +
+        '<div class="row" style="gap:.65rem">' +
+        '<span class="subject-icon" style="background:' + accent + '1c;color:' + accent + '">' + ui.esc(s.icon) + '</span>' +
+        '<div><h3 style="margin:0">' + ui.esc(s.name) + '</h3>' +
+        '<div class="small muted">' + ui.esc(yearLabel(year)) + ' · ' + g.done + ' of ' + g.total + ' completed</div></div></div>' +
+        '<div class="pc-subject-progress"><span class="small muted">' + g.pct + '%</span>' +
+        '<div class="bar"><span style="width:' + g.pct + '%;background:' + accent + '"></span></div></div></div>' +
+        '<div class="grid" style="margin-top:.85rem;gap:.6rem">' + tiles + '</div></section>';
+    }).join('');
+
+    var pct = totals.total ? Math.round(totals.done * 100 / totals.total) : 0;
+    var stream = store.stream(user.stream);
+    var yearNotice = String(year) === String(user.year) ? '' :
+      '<div class="panel soft small" style="margin-bottom:1rem"><b>Previewing ' + ui.esc(yearLabel(year)) +
+      '.</b> Your enrolled class is ' + ui.esc(yearLabel(user.year)) +
+      '. Core practicals are shared; teacher-set practicals can differ by class.</div>';
+
+    var summary = '<div class="grid cols-3 pc-summary">' +
+      '<div class="card"><div class="small muted">In this view</div><div class="pc-k">' + totals.total + '</div>' +
+      '<div class="small muted">practical classes for ' + ui.esc(yearLabel(year)) + '</div></div>' +
+      '<div class="card"><div class="small muted">Completed</div><div class="pc-k">' + totals.done + '</div>' +
+      '<div class="small muted">saved in My progress</div></div>' +
+      '<div class="card"><div class="small muted">View progress</div><div class="pc-k">' + pct + '%</div>' +
+      '<div class="bar" style="margin-top:.45rem"><span style="width:' + pct + '%"></span></div></div></div>';
+
+    var filter = '<form class="card pc-filter" id="pc-filter">' +
+      '<div class="pc-filter-grid">' +
+      '<label class="field"><span class="lbl">Class</span><select name="year">' +
+      '<option value="1"' + (year === 1 ? ' selected' : '') + '>Plus One</option>' +
+      '<option value="2"' + (year === 2 ? ' selected' : '') + '>Plus Two</option></select></label>' +
+      '<label class="field"><span class="lbl">Subject</span><select name="subject">' + subjectOptions + '</select></label>' +
+      '<label class="field"><span class="lbl">Status</span><select name="status">' +
+      '<option value="all"' + (status === 'all' ? ' selected' : '') + '>All practicals</option>' +
+      '<option value="todo"' + (status === 'todo' ? ' selected' : '') + '>Not started</option>' +
+      '<option value="done"' + (status === 'done' ? ' selected' : '') + '>Completed</option></select></label>' +
+      '<div class="pc-filter-actions"><button class="btn primary" type="submit">Show classes</button>' +
+      '<a class="btn ghost" href="' + practicalClassUrl(user.year, 'all', 'all') + '">Reset</a></div>' +
+      '</div></form>';
+
+    var empty = totals.total ?
+      ui.emptyState('No practical classes match these filters', 'Choose another subject or status to see your practical classes.',
+        '<a class="btn primary" href="' + practicalClassUrl(year, 'all', 'all') + '">Clear filters</a>') :
+      ui.emptyState('No practical classes for your subjects yet', 'Your school can add practical activities from the teacher console.');
+
     return {
-      title: 'Practical labs',
-      html: '<div class="section-head"><div><h1 style="margin:0">Practical labs</h1>' +
-        '<div class="sub">Learn by doing: experiments, simulations and studio work for ' + ui.esc(yearLabel(user.year)) + '.</div></div>' +
+      title: 'Practical classes',
+      html: '<div class="section-head"><div><h1 style="margin:0">Practical classes</h1>' +
+        '<div class="sub">Experiments, simulations and studio work for ' + ui.esc(yearLabel(year)) +
+        ' · ' + ui.esc(stream ? stream.name : '') + '</div></div>' +
         '<a class="btn small ghost" href="#/dashboard">Dashboard</a></div>' +
-        (blocks || ui.emptyState('No labs for your subjects yet', 'Your school can add practical activities from the teacher console.'))
+        yearNotice + summary + filter +
+        '<div class="section-head"><div><h2>' + ui.esc(yearLabel(year)) + ' practical classes</h2>' +
+        '<div class="sub">' + (subjectFilter === 'all' ? 'All your subjects' : 'One subject') +
+        ' · grouped by subject · ' + totals.done + ' of ' + totals.total + ' completed</div></div></div>' +
+        (subjectBlocks || empty),
+      mount: function (root) {
+        var form = root.querySelector('#pc-filter');
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var y = form.querySelector('[name="year"]').value;
+          var s = form.querySelector('[name="subject"]').value;
+          var st = form.querySelector('[name="status"]').value;
+          window.location.hash = practicalClassUrl(y, s, st);
+        });
+      }
     };
   };
 
@@ -234,7 +335,7 @@
       '<div class="stack" style="margin-top:.8rem">' + chapterHtml + '</div>' +
       '<div class="row" style="margin-top:.9rem"><a class="btn small" href="#/exam/' + ui.attr(subject.id) + '">Full chapter examination</a>' +
       '<span class="small muted">Covers the whole ' + ui.esc(yearLabel(year)) + ' question bank.</span></div></div>' +
-      '<div class="card"><h2>Practical labs</h2><div class="grid" style="gap:.6rem">' + (labHtml || '<div class="small muted">No labs configured.</div>') + '</div></div>' +
+      '<div class="card"><h2>Practical classes</h2><div class="grid" style="gap:.6rem">' + (labHtml || '<div class="small muted">No practical classes configured.</div>') + '</div></div>' +
       '<div class="card"><h2>Teacher material</h2><div class="stack">' + matHtml + '</div></div>' +
       '</div>' +
       '<div class="stack">' +
@@ -522,7 +623,7 @@
       attemptRows + '</tbody></table></div></div>' +
       '<div class="stack"><div class="card"><h3>Teacher feedback</h3><div class="stack">' + feedbackHtml + '</div></div>' +
       '<div class="card"><h3>Practical work</h3>' + (labsDone ? '<ul class="list-clean">' + labsDone + '</ul>' :
-        '<div class="small muted">No practical completed yet. <a href="#/labs">Open the labs</a>.</div>') + '</div></div>' +
+        '<div class="small muted">No practical completed yet. <a href="#/practical-classes">Open practical classes</a>.</div>') + '</div></div>' +
       '</div>';
     return { title: 'My progress', html: html };
   };

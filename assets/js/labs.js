@@ -41,7 +41,7 @@
       '<div class="row-between"><div><div class="small muted">Practical result</div>' +
       '<h2 style="margin:.1rem 0">' + score + ' / ' + max + '</h2><p class="muted" style="margin:0">' + ui.esc(msg) + '</p>' +
       '</div>' + ui.ring(pct, '#0e7c66', 70) + '</div>' +
-      '<div class="btn-row" style="margin-top:.9rem"><a class="btn" href="#/labs">All practicals</a>' +
+      '<div class="btn-row" style="margin-top:.9rem"><a class="btn" href="#/practical-classes">All practical classes</a>' +
       '<a class="btn ghost" href="#/progress">My progress</a></div></div>';
     box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -113,7 +113,7 @@
         '<input type="range" id="ctl-' + c.key + '" min="' + c.min + '" max="' + c.max + '" step="' + (c.step || 1) + '" value="' + c.value + '"></label>';
     }).join('');
 
-    var html = '<div class="breadcrumb"><a href="#/dashboard">Dashboard</a> / <a href="#/labs">Practical labs</a> / ' +
+    var html = '<div class="breadcrumb"><a href="#/dashboard">Dashboard</a> / <a href="#/practical-classes">Practical classes</a> / ' +
       ui.esc(subject.name) + '</div>' +
       '<div class="section-head"><div><h1 style="margin:0">' + ui.esc(def.title) + '</h1>' +
       '<div class="sub">' + ui.esc(subject.name) + ' · practical activity' + (practical ? ' · ' + ui.esc(practical.brief) : '') + '</div></div>' +

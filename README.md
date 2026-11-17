@@ -36,10 +36,10 @@ Students can also create a profile from **Join as student**, choosing stream, cl
 
 - **Stream and class onboarding** — Science, Commerce or Humanities; Plus One or Plus Two; subject combination and language options.
 - **Dashboard** — coverage, test average, practicals, pending work, recent results.
-- **A digital classroom per subject** — chapter-wise materials, interactive lessons, practical labs, assignments, projects, teacher-published assessments, chapter tests and full chapter examinations.
+- **A digital classroom per subject** — chapter-wise materials, interactive lessons, practical classes, assignments, projects, teacher-published assessments, chapter tests and full chapter examinations.
 - **Chapter lessons** — topic-by-topic notes, stream-specific framing, key ideas, worked examples and a chapter test.
 - **Progress tracking** — per-subject syllabus coverage, attempts, scores and practical completions.
-- **Practical labs** — 56 browser simulations. Every subject opens with its own dedicated simulation, then links to the shared stream labs, for example:
+- **Practical classes** — one catalog for every subject and class, with filters for Plus One or Plus Two, subject and completion status. Each subject shows its completed and remaining practicals, and every class opens directly in the browser. There are 56 simulations in total; every subject opens with its own dedicated simulation, then links to the shared stream labs, for example:
   - Science: motion, titration, cell biology, circuits, coding, hardware, statistics, perceptron, research survey.
   - Commerce: journal and ledger, financial statements, banking, inventory, break-even, marketing, partnership, business project.
   - Humanities: historical evidence, parliament, public administration, policy budget, map work, newsroom, debate, psychology, philosophy, journalism.

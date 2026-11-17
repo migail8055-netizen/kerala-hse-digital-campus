@@ -236,6 +236,19 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .lab-tile b { font-size: .9rem; }
 .lab-tile .meta { font-size: .78rem; color: var(--muted); }
 
+/* ---------- practical classes ---------- */
+.pc-summary { margin-bottom: 1rem; }
+.pc-summary .card { padding: .95rem 1.1rem; }
+.pc-k { font-size: 1.75rem; font-weight: 700; line-height: 1.15; margin: .1rem 0; }
+.pc-filter { margin-bottom: 1.2rem; }
+.pc-filter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: .8rem; align-items: end; }
+.pc-filter .field { margin: 0; }
+.pc-filter-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.pc-subject + .pc-subject { margin-top: 1rem; }
+.pc-subject-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.pc-subject-progress { display: flex; align-items: center; gap: .6rem; flex: 1; max-width: 230px; min-width: 140px; }
+.pc-subject-progress .bar { flex: 1; }
+
 /* ---------- classroom / lesson ---------- */
 .subhead { display: flex; gap: 1rem; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
 .breadcrumb { font-size: .8rem; color: var(--muted); margin-bottom: .5rem; }
@@ -333,6 +346,8 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
   .split, .lab { grid-template-columns: 1fr; }
   .hero { padding: 1.5rem; }
   h1 { font-size: 1.65rem; }
+  .pc-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pc-filter-actions { grid-column: 1 / -1; }
 }
 @media (max-width: 720px) {
   .site-header .bar { flex-wrap: wrap; padding: .5rem 0; gap: .5rem; }
@@ -342,6 +357,8 @@ input[type="range"] { width: 100%; accent-color: var(--green); }
   .brand-sub { display: none; }
   main#app { padding: 18px 0 40px; }
   .card { padding: 1rem; }
+  .pc-filter-grid { grid-template-columns: 1fr; }
+  .pc-subject-progress { max-width: none; }
   .hero-stats { gap: 1rem; }
   .hero-stats .k { font-size: 1.25rem; }
   .wrap { padding: 0 14px; }

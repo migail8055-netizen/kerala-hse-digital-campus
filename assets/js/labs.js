@@ -31,8 +31,8 @@
     return Math.round(n * f) / f;
   }
 
-  function finish(user, def, score, max, root, extra) {
-    store.recordPractical(user.id, def.id, score, max, def.title);
+  function finish(user, def, score, max, root, practicalId) {
+    store.recordPractical(user.id, practicalId || def.id, score, max, def.title);
     store.log(user.name + ' completed the practical "' + def.title + '" (' + score + '/' + max + ').');
     var pct = Math.round(score * 100 / max);
     var msg = pct >= 80 ? 'Strong practical work.' : pct >= 50 ? 'Good attempt — revisit the notes and try once more.' : 'Review the method and repeat the activity.';
@@ -40,7 +40,7 @@
     box.innerHTML = '<div class="card" style="margin-top:1rem;border-left:5px solid var(--green)">' +
       '<div class="row-between"><div><div class="small muted">Practical result</div>' +
       '<h2 style="margin:.1rem 0">' + score + ' / ' + max + '</h2><p class="muted" style="margin:0">' + ui.esc(msg) + '</p>' +
-      (extra ? '<div class="small" style="margin-top:.4rem">' + extra + '</div>' : '') + '</div>' + ui.ring(pct, '#0e7c66', 70) + '</div>' +
+      '</div>' + ui.ring(pct, '#0e7c66', 70) + '</div>' +
       '<div class="btn-row" style="margin-top:.9rem"><a class="btn" href="#/labs">All practicals</a>' +
       '<a class="btn ghost" href="#/progress">My progress</a></div></div>';
     box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -104,7 +104,8 @@
       practical = store.state.practicals.filter(function (p) { return p.id === params.practical; })[0];
     }
     var def = defFor(params.practical, practical ? practical.sim : null);
-    var last = store.progressOf(user.id).practicals[def.id];
+    var last = store.progressOf(user.id).practicals[params.practical] ||
+      store.progressOf(user.id).practicals[def.id];
 
     var steps = def.steps.map(function (s, i) { return stepHtml(def, s, i); }).join('');
     var controls = (def.controls || []).map(function (c) {
@@ -248,7 +249,7 @@
             fb.innerHTML = '<span class="small"><b>' + (ok ? '✓ ' : '✗ ') + '</b>' + ui.esc(detail) + '</span>';
           });
           if (unanswered) { ui.toast('Complete every step before submitting.', 'error'); return; }
-          finish(user, def, score, def.steps.length, root);
+          finish(user, def, score, def.steps.length, root, params.practical);
           root.querySelector('#lab-submit').disabled = true;
           root.querySelector('#lab-submit').textContent = 'Submitted';
         });

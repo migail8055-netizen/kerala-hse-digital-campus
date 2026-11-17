@@ -126,7 +126,8 @@
           2: HSE.parseChapters(raw.years && raw.years[2], id, 2)
         },
         practicals: (raw.practicals || []).map(function (p, i) {
-          return { id: id + '-p' + (i + 1), sim: p[0], title: p[1], brief: p[2], subject: id };
+          /* Every subject's first practical is its own dedicated simulation. */
+          return { id: id + '-p' + (i + 1), sim: i === 0 ? 'sim-sub-' + id : p[0], title: p[1], brief: p[2], subject: id };
         })
       };
     });

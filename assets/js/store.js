@@ -104,6 +104,11 @@
         subjects: ['history', 'political-science', 'geography', 'sociology', 'psychology', 'malayalam'],
         streams: ['humanities'], createdAt: store.now() });
     }
+    var subjects = (s.curriculum && s.curriculum.subjects) || {};
+    Object.keys(subjects).forEach(function (id) {
+      var list = subjects[id].practicals || [];
+      if (list[0]) list[0].sim = 'sim-sub-' + id;
+    });
     s.users.forEach(function (u) {
       if (u.role === 'student') {
         if (!u.subjects) u.subjects = [];

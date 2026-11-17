@@ -39,10 +39,11 @@ Students can also create a profile from **Join as student**, choosing stream, cl
 - **A digital classroom per subject** — chapter-wise materials, interactive lessons, practical labs, assignments, projects, teacher-published assessments, chapter tests and full chapter examinations.
 - **Chapter lessons** — topic-by-topic notes, stream-specific framing, key ideas, worked examples and a chapter test.
 - **Progress tracking** — per-subject syllabus coverage, attempts, scores and practical completions.
-- **Practical labs** — 29 browser simulations covering all three streams, for example:
-  - Science: projectile motion, titration, cell biology, circuits, coding, hardware, statistics, perceptron, research survey.
+- **Practical labs** — 56 browser simulations. Every subject opens with its own dedicated simulation, then links to the shared stream labs, for example:
+  - Science: motion, titration, cell biology, circuits, coding, hardware, statistics, perceptron, research survey.
   - Commerce: journal and ledger, financial statements, banking, inventory, break-even, marketing, partnership, business project.
-  - Humanities: historical evidence, parliament, public administration, policy budget, map work, newsroom, debate, language matching.
+  - Humanities: historical evidence, parliament, public administration, policy budget, map work, newsroom, debate, psychology, philosophy, journalism.
+  - Languages: vocabulary, script and skill matching for each configured language.
 - **Languages** — English, Malayalam, Hindi, Arabic, Sanskrit and Urdu, each with reading, writing, grammar, communication and assessment activities.
 
 ## What teachers get
@@ -93,6 +94,10 @@ assets/js/
   labs-science.js              science simulations
   labs-commerce.js             commerce simulations
   labs-humanities.js           humanities and language simulations
+  labs-subjects-science.js     per-subject science simulations
+  labs-subjects-commerce.js    per-subject commerce simulations
+  labs-subjects-humanities.js  per-subject humanities simulations
+  labs-languages-subjects.js   generated per-language simulations
 ```
 
 ## Data notes
@@ -101,3 +106,4 @@ assets/js/
 - Demo accounts have no passwords; add real authentication and a backend before using this with real student data.
 - Chapter text is compact seed content (`Title :: topic | topic`), intended to be replaced or extended by teachers and curriculum administrators.
 - The curriculum seed follows the DHSE Kerala Plus One / Plus Two subject structure, with 21 core subjects and 6 configurable language subjects.
+- Every subject's first practical uses the dedicated `sim-sub-<subject>` simulation. Language simulations are generated from the configurable language list, so a language added by an administrator gets a lab automatically. Curriculum saved by an earlier version is upgraded on load.
